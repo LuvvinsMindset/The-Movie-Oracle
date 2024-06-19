@@ -1,14 +1,15 @@
-import db from '../../../lib/db';
+import { NextApiRequest, NextApiResponse } from 'next';
+import db from '@/lib/db'; // Adjust the path if necessary
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
-  const { email, movieId, movieTitle } = req.body;
+  const { email, movieId, title } = req.body;
 
   if (method === 'POST') {
     // Add a favorite movie
     try {
-      const stmt = db.prepare('INSERT INTO favorites (email, movieId, movieTitle) VALUES (?, ?, ?)');
-      stmt.run(email, movieId, movieTitle);
+      const stmt = db.prepare('INSERT INTO favorite_movies (user_id, movie_id) VALUES ((SELECT id FROM users WHERE email = ?), ?)');
+      stmt.run(email, movieId);
       res.status(200).json({ message: 'Movie added to favorites' });
     } catch (error) {
       console.error('Error adding favorite movie:', error);
@@ -18,7 +19,13 @@ export default async function handler(req, res) {
     // Retrieve favorite movies for the user
     try {
       const { email } = req.query;
-      const stmt = db.prepare('SELECT movieId, movieTitle FROM favorites WHERE email = ?');
+      const stmt = db.prepare(`
+        SELECT favorite_movies.movie_id, movies.title
+        FROM favorite_movies
+        JOIN users ON favorite_movies.user_id = users.id
+        JOIN movies ON favorite_movies.movie_id = movies.id
+        WHERE users.email = ?
+      `);
       const favorites = stmt.all(email);
       res.status(200).json({ favorites });
     } catch (error) {

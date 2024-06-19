@@ -8,7 +8,7 @@ import { moviesAPI } from '@/movies/moviesAPI';
 import { apiConfigurationAPI } from '@/api-configuration/apiConfigurationAPI';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps } from 'next';
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material'; // Import Grid from MUI
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -31,7 +31,8 @@ function MovieProfilePage() {
           await axios.post('/api/favorites', {
             email: userEmail,
             movieId: data.id,
-            title: data.title,
+            movieTitle: data.title, // Corrected field name
+            posterPath: data.poster_path,
           });
           setFavorite(true);
         } catch (error) {
@@ -61,10 +62,16 @@ function MovieProfilePage() {
               ],
             }}
           />
-          <MovieProfile movie={data} loading={isLoading} />
-          <Button onClick={handleFavorite} variant="contained" color="primary">
-            {favorite ? 'Favorited' : 'Add to Favorites'}
-          </Button>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={8}>
+              <MovieProfile movie={data} loading={isLoading} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Button onClick={handleFavorite} variant="contained" color="primary" fullWidth>
+                {favorite ? 'Favorited' : 'Add to Favorites'}
+              </Button>
+            </Grid>
+          </Grid>
         </>
       )}
     </>

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Container, Box, Typography, TextField, Button, Alert } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Alert, IconButton } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import Image from 'next/image'; // Import Image for displaying movie posters
+import DeleteIcon from '@mui/icons-material/Delete'; // Import DeleteIcon for the delete button
 
 interface User {
   id: number;
@@ -12,6 +14,7 @@ interface User {
 interface Movie {
   id: number;
   title: string;
+  posterPath: string; // Add posterPath to the Movie interface
 }
 
 const Settings = () => {
@@ -36,6 +39,7 @@ const Settings = () => {
       setEmail(userEmail);
       setRole(userRole);
       fetchUserData(userEmail);
+      fetchFavoriteMovies(userEmail);
     }
   }, []);
 
@@ -49,6 +53,15 @@ const Settings = () => {
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+    }
+  };
+
+  const fetchFavoriteMovies = async (email: string) => {
+    try {
+      const response = await axios.get(`/api/favorites?email=${email}`);
+      setFavoriteMovies(response.data.favorites);
+    } catch (error) {
+      console.error('Error fetching favorite movies:', error);
     }
   };
 
@@ -100,6 +113,16 @@ const Settings = () => {
     }
   };
 
+  const handleDeleteFavoriteMovie = async (movieId: number) => {
+    try {
+      await axios.delete('/api/favorites', { data: { email, movieId } });
+      fetchFavoriteMovies(email); // Refresh the favorite movies list
+    } catch (error) {
+      console.error('Error deleting favorite movie:', error);
+      setError('Failed to delete favorite movie');
+    }
+  };
+
   return (
     <Container maxWidth="md">
       <Box sx={{ marginTop: 8 }}>
@@ -110,7 +133,16 @@ const Settings = () => {
           <Box>
             {favoriteMovies.length ? (
               favoriteMovies.map((movie: Movie) => (
-                <Typography key={movie.id}>{movie.title}</Typography>
+                <Box key={movie.id} sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
+                  <Image src={movie.posterPath} alt={movie.title} width={50} height={75} />
+                  <Typography sx={{ flex: 1, mx: 2 }}>{movie.title}</Typography>
+                  <IconButton
+                    aria-label="delete"
+                    onClick={() => handleDeleteFavoriteMovie(movie.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               ))
             ) : (
               <Typography>No favorite movies added</Typography>
