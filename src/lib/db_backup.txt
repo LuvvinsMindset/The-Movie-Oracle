@@ -18,10 +18,9 @@ function initializeDatabase() {
     `);
 
     console.log('Database initialized successfully.');
-  }
+}
 
 // Initialize the database on every load for development and production
 initializeDatabase();
-  
 
 export default db;

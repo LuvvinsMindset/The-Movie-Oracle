@@ -28,8 +28,8 @@ const Settings = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const userEmail = localStorage.getItem('userEmail');
-    const userRole = localStorage.getItem('userRole');
+    const userEmail = localStorage.getItem('userEmail') || '';
+    const userRole = localStorage.getItem('userRole') || '';
     if (!userEmail) {
       router.push('/login');
     } else {

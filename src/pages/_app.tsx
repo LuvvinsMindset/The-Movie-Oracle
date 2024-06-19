@@ -19,6 +19,7 @@ import {
 import { createQueryClient } from '@/http-client/queryClient';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PaletteMode } from '@mui/material';
+import { UserProvider } from '@/context/UserContext';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -51,10 +52,12 @@ function MyApp({
           </Head>
           <BaseDefaultSeo />
           <BaseThemeProvider initialPaletteMode={initialPaletteMode}>
-            <PageProgressBar />
-            <AppLayout>
-              <Component {...pageProps} />
-            </AppLayout>
+            <UserProvider>
+              <PageProgressBar />
+              <AppLayout>
+                <Component {...pageProps} />
+              </AppLayout>
+            </UserProvider>
           </BaseThemeProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </Hydrate>
