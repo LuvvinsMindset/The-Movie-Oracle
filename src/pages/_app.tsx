@@ -4,22 +4,17 @@ import App, { AppContext, AppProps } from 'next/app';
 import AppLayout from '@/layout/AppLayout';
 import BaseDefaultSeo from '@/seo/BaseDefaultSeo';
 import { APP_TITLE } from '@/common/CommonConstants';
-import BaseThemeProvider, {
-  getInitialPaletteMode,
-} from '@/theme/BaseThemeProvider';
+import BaseThemeProvider, { getInitialPaletteMode } from '@/theme/BaseThemeProvider';
 import PageProgressBar from '@/common/PageProgressBar';
 import createEmotionCache from '@/theme/createEmotionCache';
 import { EmotionCache } from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
-import {
-  DehydratedState,
-  Hydrate,
-  QueryClientProvider,
-} from '@tanstack/react-query';
+import { DehydratedState, Hydrate, QueryClientProvider } from '@tanstack/react-query';
 import { createQueryClient } from '@/http-client/queryClient';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PaletteMode } from '@mui/material';
 import { UserProvider } from '@/context/UserContext';
+import UserProfile from '@/components/UserProfile';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -45,16 +40,14 @@ function MyApp({
         <Hydrate state={pageProps.dehydratedState}>
           <Head>
             <title>{APP_TITLE}</title>
-            <meta
-              name="viewport"
-              content="initial-scale=1, width=device-width"
-            />
+            <meta name="viewport" content="initial-scale=1, width=device-width" />
           </Head>
           <BaseDefaultSeo />
           <BaseThemeProvider initialPaletteMode={initialPaletteMode}>
             <UserProvider>
               <PageProgressBar />
               <AppLayout>
+                <UserProfile />
                 <Component {...pageProps} />
               </AppLayout>
             </UserProvider>

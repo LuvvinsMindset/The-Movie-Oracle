@@ -1,21 +1,87 @@
-import db from '../../../lib/db';
+import { useState } from 'react';
+import { Container, Box, TextField, Button, Typography, Alert } from '@mui/material';
+import axios from 'axios';
+import { useRouter } from 'next/router';
 
-export default async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
-  }
+const Register = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
 
-  const { email, password } = req.body;
-
-  try {
-    const stmt = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)');
-    stmt.run(email, password);
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-      res.status(409).json({ message: 'User already exists' });
-    } else {
-      res.status(500).json({ message: 'Internal server error' });
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (!validateEmail(email)) {
+      setError('Invalid email format');
+      return;
     }
-  }
+    setError('');
+    try {
+      const response = await axios.post('/api/auth/register', { email, password });
+      alert('Registration successful');
+      router.push('/login');
+    } catch (error) {
+      console.error('Error registering:', error);
+      setError('Registration failed');
+    }
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  return (
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          marginTop: 8,
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Register
+        </Typography>
+        <Box component="form" onSubmit={handleRegister} sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {error && <Alert severity="error">{error}</Alert>}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Register
+          </Button>
+        </Box>
+      </Box>
+    </Container>
+  );
 };
+
+export default Register;

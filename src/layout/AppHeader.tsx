@@ -1,4 +1,4 @@
-import { forwardRef, useState, useEffect } from 'react';
+import { forwardRef, useState } from 'react';
 import { AppBar, Toolbar, Box, IconButton, Stack, Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
@@ -13,19 +13,13 @@ import ExternalLink from '@/routing/ExternalLink';
 import { useIsMobile } from '@/common/CommonHooks';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useUser } from '@/context/UserContext'; // Import useUser from the context
 
 const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
   const isMobile = useIsMobile();
   const [isMobileSearch, setIsMobileSearch] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { user, logout } = useUser(); // Use the user and logout function from the context
   const router = useRouter();
-
-  useEffect(() => {
-    const email = localStorage.getItem('userEmail');
-    if (email) {
-      setUserEmail(email);
-    }
-  }, []);
 
   if (!isMobile && isMobileSearch) {
     setIsMobileSearch(false);
@@ -42,8 +36,7 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
   const { mode, toggleMode } = usePaletteMode();
 
   const handleLogout = () => {
-    localStorage.removeItem('userEmail');
-    setUserEmail(null);
+    logout(); // Call the logout function from the context
     router.push('/login');
   };
 
@@ -53,7 +46,6 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
         ref={ref}
         color="default"
         sx={{
-          // To make the drawer clipped
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
       >
@@ -109,11 +101,11 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
               >
                 <GitHubIcon />
               </IconButton>
-              {userEmail ? (
+              {user ? (
                 <>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Link href="/settings" passHref>
-                      <Button color="inherit">{userEmail}</Button>
+                      <Button color="inherit">{user}</Button>
                     </Link>
                     <Button onClick={handleLogout} color="inherit">Logout</Button>
                   </Box>

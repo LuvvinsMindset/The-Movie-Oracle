@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { Container, Box, TextField, Button, Typography, Alert } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { useUser } from 'src/context/UserContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const { login } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ const Login = () => {
     setError('');
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      localStorage.setItem('userEmail', response.data.email);
+      login(response.data.email); // Update context with user email
       router.push('/');
     } catch (error) {
       console.error('Error logging in:', error);

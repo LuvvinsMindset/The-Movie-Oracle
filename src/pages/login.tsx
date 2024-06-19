@@ -2,16 +2,16 @@ import { useState } from 'react';
 import { Container, Box, TextField, Button, Typography, Alert } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { useUser } from '../context/UserContext';
+import { useUser } from '@/context/UserContext';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string>('');
   const router = useRouter();
   const { login } = useUser();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateEmail(email)) {
       setError('Invalid email format');
@@ -28,7 +28,7 @@ const Login = () => {
     }
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
