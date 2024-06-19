@@ -1,3 +1,5 @@
+"use client"
+
 import { forwardRef, useState, useEffect } from 'react';
 import { AppBar, Toolbar, Box, IconButton, Stack, Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -22,6 +24,7 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
+    console.log('Retrieved email from localStorage:', email); // Debug statement
     if (email) {
       setUserEmail(email);
     }
@@ -112,25 +115,16 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
               {userEmail ? (
                 <>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Link href="/settings" passHref>
-                      <Button color="inherit">{userEmail}</Button>
-                    </Link>
+                    <span>{userEmail}</span>
                     <Button onClick={handleLogout} color="inherit">Logout</Button>
                   </Box>
                 </>
               ) : (
-                <>
-                  <Link href="/login" passHref>
-                    <Button variant="contained" color="primary">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/register" passHref>
-                    <Button variant="contained" color="secondary">
-                      Register
-                    </Button>
-                  </Link>
-                </>
+                <Link href="/login" passHref>
+                  <Button variant="contained" color="primary">
+                    Login/Register
+                  </Button>
+                </Link>
               )}
             </Stack>
           )}

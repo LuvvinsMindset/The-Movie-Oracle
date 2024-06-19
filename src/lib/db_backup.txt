@@ -1,0 +1,27 @@
+// db.js
+import Database from 'better-sqlite3';
+import path from 'path';
+
+const isProduction = process.env.NODE_ENV === 'production';
+const dbPath = path.join(process.cwd(), 'database.sqlite');
+
+const db = new Database(dbPath, { verbose: console.log }); // Log SQL queries for debugging
+
+function initializeDatabase() {
+    // Create the users table if it doesn't exist
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+      );
+    `);
+
+    console.log('Database initialized successfully.');
+  }
+
+// Initialize the database on every load for development and production
+initializeDatabase();
+  
+
+export default db;
