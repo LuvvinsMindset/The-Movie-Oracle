@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Container, Box, Typography, TextField, Button, Alert, IconButton } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import Image from 'next/image'; // Import Image for displaying movie posters
 import DeleteIcon from '@mui/icons-material/Delete'; // Import DeleteIcon for the delete button
 
 interface User {
@@ -13,8 +12,8 @@ interface User {
 
 interface Movie {
   id: number;
-  title: string;
-  posterPath: string; // Add posterPath to the Movie interface
+  movie_id: number;
+  movie_title: string;
 }
 
 const Settings = () => {
@@ -134,11 +133,10 @@ const Settings = () => {
             {favoriteMovies.length ? (
               favoriteMovies.map((movie: Movie) => (
                 <Box key={movie.id} sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
-                  <Image src={movie.posterPath} alt={movie.title} width={50} height={75} />
-                  <Typography sx={{ flex: 1, mx: 2 }}>{movie.title}</Typography>
+                  <Typography sx={{ flex: 1 }}>{movie.movie_title}</Typography>
                   <IconButton
                     aria-label="delete"
-                    onClick={() => handleDeleteFavoriteMovie(movie.id)}
+                    onClick={() => handleDeleteFavoriteMovie(movie.movie_id)}
                   >
                     <DeleteIcon />
                   </IconButton>

@@ -22,20 +22,9 @@ function initializeDatabase() {
       user_id INTEGER NOT NULL,
       movie_id INTEGER NOT NULL,
       movie_title TEXT NOT NULL,
-      poster_path TEXT NOT NULL,
-      email TEXT NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `);
-
-  // Ensure the movie_title column exists in favorite_movies table
-  const columns = db.prepare("PRAGMA table_info(favorite_movies);").all();
-  const requiredColumns = ['movie_title', 'poster_path', 'email'];
-  requiredColumns.forEach(column => {
-    if (!columns.some(c => c.name === column)) {
-      db.exec(`ALTER TABLE favorite_movies ADD COLUMN ${column} TEXT NOT NULL DEFAULT '';`);
-    }
-  });
 
   console.log('Database initialized successfully.');
 }
