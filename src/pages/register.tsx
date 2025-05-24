@@ -20,7 +20,7 @@ const Register = () => {
     setError('');
     try {
       const response = await axios.post('/api/auth/register', { email, password });
-      login(response.data.email); // Update context with user email
+      login(response.data.email);
       router.push('/');
     } catch (error) {
       console.error('Error registering:', error);
