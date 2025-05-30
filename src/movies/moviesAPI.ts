@@ -1,8 +1,9 @@
-import { MovieDetails, Genre, Movie } from '@/movies/MoviesTypes';
+import { MovieDetails, Genre, Movie, WatchProvidersResponse } from '@/movies/MoviesTypes';
 import { ID, PaginationResponse } from '@/common/CommonTypes';
 import { FIRST_PAGE, getNextPageParam, IS_SERVER } from '@/common/CommonUtils';
 import { moviesService } from '@/movies/MoviesService';
 import { httpClient } from '@/http-client/httpClient';
+import { tmdbClient } from '@/http-client/tmdbClient';
 
 export const moviesAPI = {
   movieDetails: (movieId: ID) => ({
@@ -62,5 +63,9 @@ export const moviesAPI = {
       IS_SERVER
         ? moviesService.getMovieGenres()
         : httpClient.get<Genre[]>('/api/movies/genres'),
+  }),
+  movieWatchProviders: (movieId: number) => ({
+    queryKey: ['movie', movieId, 'watch-providers'],
+    queryFn: () => tmdbClient.get<WatchProvidersResponse>(`/movie/${movieId}/watch/providers`),
   }),
 };

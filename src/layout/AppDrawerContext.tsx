@@ -43,7 +43,6 @@ function AppDrawerProvider({ children }: AppDrawerProviderProps) {
 
   const router = useRouter();
 
-  // We close the drawer when a route change gets completed.
   useEffect(() => {
     const eventType = 'routeChangeComplete';
 

@@ -12,7 +12,6 @@ function MovieAutocompleteItem({ movie, ...rest }: MovieAutocompleteItemProps) {
       avatarUrl={movie.poster_path}
       primaryText={movie.title}
       secondaryText={getMovieReleaseYear(movie)?.toString()}
-      // Required for SearchAutocomplete
       {...rest}
     />
   );

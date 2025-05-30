@@ -10,7 +10,6 @@ async function handleResponse(response: Response) {
     try {
       const errorJson = await response.json();
       message = errorJson.status_message;
-      // eslint-disable-next-line no-empty
     } catch {}
 
     throw new CustomError(response.status, message);

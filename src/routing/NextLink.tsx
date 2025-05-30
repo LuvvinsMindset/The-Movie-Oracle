@@ -13,10 +13,8 @@ const NextLink = forwardRef<React.ElementRef<typeof Link>, NextLinkProps>(
       <MuiLink
         ref={ref}
         component={Link}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         href={href as any}
         underline="none"
-        // To disable prefetch feature of next/link
         prefetch={false}
         {...rest}
       />

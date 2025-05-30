@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Container, Box, Typography, TextField, Button, Alert, IconButton } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, Alert } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import DeleteIcon from '@mui/icons-material/Delete'; // Import DeleteIcon for the delete button
+import { useUser } from '@/context/UserContext';
 
 interface User {
   id: number;
@@ -10,35 +10,32 @@ interface User {
   role: string;
 }
 
-interface Movie {
-  id: number;
-  movie_id: number;
-  movie_title: string;
-}
-
 const Settings = () => {
   const [email, setEmail] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const [newUsername, setNewUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [roleEmail, setRoleEmail] = useState<string>('');
   const [newRole, setNewRole] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
-  const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [role, setRole] = useState<string>('');
   const router = useRouter();
+  const { login } = useUser();
 
   useEffect(() => {
     const userEmail = localStorage.getItem('userEmail') || '';
     const userRole = localStorage.getItem('userRole') || '';
+    const storedUsername = localStorage.getItem('username') || '';
     if (!userEmail) {
       router.push('/login');
     } else {
       setEmail(userEmail);
+      setUsername(storedUsername);
       setRole(userRole);
       fetchUserData(userEmail);
-      fetchFavoriteMovies(userEmail);
     }
   }, []);
 
@@ -52,15 +49,6 @@ const Settings = () => {
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
-    }
-  };
-
-  const fetchFavoriteMovies = async (email: string) => {
-    try {
-      const response = await axios.get(`/api/favorites?email=${email}`);
-      setFavoriteMovies(response.data.favorites);
-    } catch (error) {
-      console.error('Error fetching favorite movies:', error);
     }
   };
 
@@ -112,13 +100,22 @@ const Settings = () => {
     }
   };
 
-  const handleDeleteFavoriteMovie = async (movieId: number) => {
+  const handleChangeUsername = async () => {
+    if (!newUsername || newUsername.length < 3) {
+      setError('Username must be at least 3 characters long');
+      return;
+    }
+
     try {
-      await axios.delete('/api/favorites', { data: { email, movieId } });
-      fetchFavoriteMovies(email); // Refresh the favorite movies list
-    } catch (error) {
-      console.error('Error deleting favorite movie:', error);
-      setError('Failed to delete favorite movie');
+      await axios.post('/api/user/change-username', { email, newUsername });
+      setSuccess('Username changed successfully');
+      setError('');
+      login(email, newUsername);
+      setUsername(newUsername);
+      setNewUsername('');
+    } catch (error: any) {
+      console.error('Error changing username:', error);
+      setError(error.response?.data?.message || 'Failed to change username');
     }
   };
 
@@ -128,23 +125,33 @@ const Settings = () => {
         <Typography variant="h4">Settings</Typography>
 
         <Box sx={{ marginTop: 4 }}>
-          <Typography variant="h5">Favorite Movies</Typography>
-          <Box>
-            {favoriteMovies.length ? (
-              favoriteMovies.map((movie: Movie) => (
-                <Box key={movie.id} sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
-                  <Typography sx={{ flex: 1 }}>{movie.movie_title}</Typography>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => handleDeleteFavoriteMovie(movie.movie_id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              ))
-            ) : (
-              <Typography>No favorite movies added</Typography>
-            )}
+          <Typography variant="h5">Profile</Typography>
+          <Box component="form" onSubmit={(e) => { e.preventDefault(); handleChangeUsername(); }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="currentUsername"
+              label="Current Username"
+              type="text"
+              id="currentUsername"
+              value={username}
+              disabled
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="newUsername"
+              label="New Username"
+              type="text"
+              id="newUsername"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+            />
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              Change Username
+            </Button>
           </Box>
         </Box>
 
@@ -218,7 +225,16 @@ const Settings = () => {
               allUsers.map((user: User) => (
                 <Box key={user.id} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', my: 1 }}>
                   <Typography>{user.email}</Typography>
-                  <Button variant="contained" color="secondary" onClick={() => handleDeleteUser(user.email)}>
+                  <Button 
+                    variant="contained" 
+                    sx={{ 
+                      bgcolor: '#ff0000',
+                      '&:hover': {
+                        bgcolor: '#cc0000'
+                      }
+                    }}
+                    onClick={() => handleDeleteUser(user.email)}
+                  >
                     Delete
                   </Button>
                 </Box>

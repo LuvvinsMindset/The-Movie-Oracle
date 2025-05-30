@@ -94,8 +94,6 @@ function AppDrawer() {
 
   const drawerProps = { open: isOpen, onClose: close };
 
-  // If we use `useIsMobile` hook to render components responsively, it flickers especially on low-end mobile devices.
-  // So, instead of relying on JS, we rely on CSS to prevent this flickering.
   return (
     <>
       <StyledDrawer

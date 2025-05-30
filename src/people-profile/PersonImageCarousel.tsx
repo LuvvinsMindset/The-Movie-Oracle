@@ -17,7 +17,6 @@ function PersonImageCarousel({ person }: PersonImageCarouselProps) {
   return (
     <>
       <BaseCarousel
-        // To reset the carousel as user redirects from person to another person
         key={person.id}
         loading={isLoading}
         slidesPerView={{ default: 2, md: 5, lg: 7 }}

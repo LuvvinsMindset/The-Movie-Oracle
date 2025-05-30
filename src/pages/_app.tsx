@@ -14,9 +14,7 @@ import { createQueryClient } from '@/http-client/queryClient';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PaletteMode } from '@mui/material';
 import { UserProvider } from '@/context/UserContext';
-import UserProfile from '@/components/UserProfile';
 
-// Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 type PageProps = { dehydratedState: DehydratedState };
@@ -47,7 +45,6 @@ function MyApp({
             <UserProvider>
               <PageProgressBar />
               <AppLayout>
-                <UserProfile />
                 <Component {...pageProps} />
               </AppLayout>
             </UserProvider>

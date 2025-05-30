@@ -11,8 +11,6 @@ function TmdbAttribution() {
         <SvgIcon viewBox="0 0 185.04 133.4" sx={{ fontSize: 48 }}>
           <defs>
             <linearGradient
-              // Using a hard-coded id is not working.
-              // It doesn't work when the icon is used in multiple places like in a sidebar and a drawer etc.
               id={linearGradientId}
               y1="66.7"
               x2="185.04"

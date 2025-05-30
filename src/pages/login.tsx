@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Container, Box, TextField, Button, Typography, Alert } from '@mui/material';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useUser } from '@/context/UserContext';
 
@@ -8,23 +8,46 @@ const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { login } = useUser();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
     if (!validateEmail(email)) {
       setError('Invalid email format');
       return;
     }
+    
     setError('');
+    setLoading(true);
+
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      login(response.data.email); // Update context with user email
-      router.push('/');
+      const response = await axios.post('/api/auth/login', {
+        email,
+        password,
+      });
+
+      const { email: userEmail, username, role } = response.data;
+      if (userEmail && username) {
+        await login(userEmail, username);
+        router.push('/');
+      } else {
+        setError('Invalid response from server');
+      }
     } catch (error) {
-      console.error('Error logging in:', error);
-      setError('Login failed');
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          setError('Invalid email or password');
+        } else {
+          setError('An error occurred during login. Please try again.');
+        }
+      } else {
+        setError('An unexpected error occurred');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,7 +69,7 @@ const Login = () => {
         <Typography component="h1" variant="h5">
           Login
         </Typography>
-        <Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -77,8 +100,9 @@ const Login = () => {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </Button>
         </Box>
       </Box>

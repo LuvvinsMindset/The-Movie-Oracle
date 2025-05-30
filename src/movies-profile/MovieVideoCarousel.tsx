@@ -15,7 +15,6 @@ function MovieVideoCarousel({ movieId }: MovieVideoCarouselProps) {
   return (
     <>
       <BaseCarousel
-        // To reset the carousel as user redirects from movie to another movie
         key={movieId}
         loading={isLoading}
         slidesPerView={{ default: 2, md: 4, lg: 5 }}

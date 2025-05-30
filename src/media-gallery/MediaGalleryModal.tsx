@@ -97,7 +97,6 @@ function MediaGalleryModal({
 
   function handleExited() {
     const {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       [queryParamName]: omitted,
       ...restQuery
     } = router.query;

@@ -1,5 +1,5 @@
-import { forwardRef, useState } from 'react';
-import { AppBar, Toolbar, Box, IconButton, Stack, Button } from '@mui/material';
+import { forwardRef, useState, useEffect } from 'react';
+import { AppBar, Toolbar, Box, IconButton, Stack, Button, Badge } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import HideOnScroll from '@/layout/HideOnScroll';
@@ -9,17 +9,55 @@ import { usePaletteMode } from '@/theme/BaseThemeProvider';
 import DarkModeIcon from '@mui/icons-material/DarkModeOutlined';
 import Brightness5OutlinedIcon from '@mui/icons-material/Brightness5Outlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import ExternalLink from '@/routing/ExternalLink';
 import { useIsMobile } from '@/common/CommonHooks';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useUser } from '@/context/UserContext'; // Import useUser from the context
+import { useUser } from '@/context/UserContext';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import EmailIcon from '@mui/icons-material/Email';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import axios from 'axios';
+import { messageEvents } from '@/utils/messageEvents';
 
 const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
   const isMobile = useIsMobile();
   const [isMobileSearch, setIsMobileSearch] = useState(false);
-  const { user, logout } = useUser(); // Use the user and logout function from the context
+  const { user, logout, username, role } = useUser();
   const router = useRouter();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (role === 'admin') {
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 30000);
+      
+      const unsubscribe = messageEvents.subscribe((event) => {
+        if (['new', 'read', 'delete'].includes(event.type)) {
+          fetchUnreadCount();
+        }
+      });
+      
+      return () => {
+        clearInterval(interval);
+        unsubscribe();
+      };
+    }
+  }, [role]);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await axios.get('/api/admin/messages/unread-count', {
+        headers: {
+          'user-email': user
+        }
+      });
+      setUnreadCount(response.data.count);
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  };
 
   if (!isMobile && isMobileSearch) {
     setIsMobileSearch(false);
@@ -36,7 +74,7 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
   const { mode, toggleMode } = usePaletteMode();
 
   const handleLogout = () => {
-    logout(); // Call the logout function from the context
+    logout();
     router.push('/login');
   };
 
@@ -87,27 +125,67 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
               >
                 <SearchIcon />
               </IconButton>
+              
+              {user && (
+                <IconButton
+                  color="inherit"
+                  onClick={() => router.push('/support')}
+                  sx={{ ml: 1 }}
+                  aria-label="support"
+                >
+                  <HelpOutlineIcon />
+                </IconButton>
+              )}
+
+              {role === 'admin' && (
+                <>
+                  <IconButton
+                    color="inherit"
+                    onClick={() => router.push('/admin/messages')}
+                    sx={{ ml: 1 }}
+                    aria-label="messages"
+                  >
+                    <Badge badgeContent={unreadCount} color="error">
+                      <EmailIcon />
+                    </Badge>
+                  </IconButton>
+                  <IconButton
+                    color="inherit"
+                    onClick={() => router.push('/admin/activity')}
+                    sx={{ ml: 1 }}
+                    aria-label="activity"
+                  >
+                    <TimelineIcon />
+                  </IconButton>
+                </>
+              )}
+
               <IconButton aria-label="Toggle theme" onClick={toggleMode}>
-                {mode === 'light' ? (
-                  <DarkModeIcon />
-                ) : (
-                  <Brightness5OutlinedIcon />
-                )}
+                {mode === 'light' ? <DarkModeIcon /> : <Brightness5OutlinedIcon />}
               </IconButton>
+
               <IconButton
-                aria-label="Toggle theme"
+                aria-label="GitHub"
                 href="https://github.com/LuvvinsMindset/The-Movie-Oracle"
                 LinkComponent={ExternalLink}
               >
                 <GitHubIcon />
               </IconButton>
+
               {user ? (
                 <>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Link href="/settings" passHref>
-                      <Button color="inherit">{user}</Button>
+                      <Button color="inherit">{username}</Button>
                     </Link>
-                    <Button onClick={handleLogout} color="inherit">Logout</Button>
+                    <Link href="/favorites" passHref>
+                      <IconButton sx={{ color: 'white' }} aria-label="favorites">
+                        <FavoriteIcon />
+                      </IconButton>
+                    </Link>
+                    <Button onClick={handleLogout} color="inherit">
+                      Logout
+                    </Button>
                   </Box>
                 </>
               ) : (

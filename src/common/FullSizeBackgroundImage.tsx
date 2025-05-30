@@ -13,7 +13,6 @@ export default function FullSizeBackgroundImage({
 }: FullSizeBackgroundImageProps) {
   return (
     <Box
-      // To prevent showing the image of previous movie/person until the next one's is loaded.
       key={src}
       sx={{
         position: 'fixed',

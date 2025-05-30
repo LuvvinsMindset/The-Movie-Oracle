@@ -5,7 +5,7 @@ import { BasePerson } from '@/people/PeopleTypes';
 import { isPerson } from '@/people/PeopleUtils';
 
 export const VIEW_FILTER_LIMIT = {
-  minVoteCount: 200,
+  minVoteCount: 50,
   minPopularity: 5,
 };
 
@@ -41,11 +41,7 @@ export function filterViewablePageResults<T>(
   return {
     ...page,
     results: remainingItems,
-    // `total_results` and `total_pages` calculation is not the perfect way to do it.
-    // But it's just for demo purposes.
     total_results: page.total_results - removedItemCount,
-    // If all of the items are removed, we set this page as the last one
-    // to stop infinite loaders.
     total_pages: !remainingItems.length ? page.page : page.total_pages,
   };
 }

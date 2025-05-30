@@ -22,9 +22,6 @@ export function useDebounce<Value>(value: Value, wait = 250) {
   return debouncedValue;
 }
 
-// We can use this hook to implement a behavior like `getDerivedStateFromProps`
-// and update some state **during** render.
-// https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops
 export function useHasChanged<Val>(val: Val) {
   const [prevVal, setPrevVal] = useState(val);
 

@@ -19,8 +19,6 @@ function InfiniteGridList({
   return (
     <>
       <BaseGridList
-        // If list has next page, we keep loading shown
-        // to prevent flickering of loading indicator.
         loading={loading || hasNextPage}
         listEmptyMessage={listEmptyMessage}
       >

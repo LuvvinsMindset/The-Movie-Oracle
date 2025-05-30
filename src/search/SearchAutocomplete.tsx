@@ -89,7 +89,6 @@ function SearchAutocomplete({ autoFocus, sx }: SearchAutocompleteProps) {
       }}
       getOptionLabel={(option) => {
         if (typeof option === 'string') {
-          // For freeSolo
           return option;
         }
         return isMovie(option) ? option.title : option.name;
@@ -99,13 +98,8 @@ function SearchAutocomplete({ autoFocus, sx }: SearchAutocompleteProps) {
       onInputChange={(e, newInputValue) => setSearchValue(newInputValue)}
       freeSolo
       autoFocus={autoFocus}
-      // To make repeatedly hitting Enter work, we set the value as empty string.
-      // Otherwise, after user selects an option or hits enter, `onChange` does not get triggered
-      // by hitting Enter again without changing the input text value.
       value=""
       onChange={(e, newValue) => {
-        // Because we set freeSolo as true,
-        // newValue can be a string too.
         if (typeof newValue === 'string') {
           handleRedirect(newValue);
         } else if (!Array.isArray(newValue)) {

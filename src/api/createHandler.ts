@@ -5,8 +5,6 @@ export const createHandler =
   (fn: NextApiHandler): NextApiHandler =>
   async (req, res) => {
     try {
-      // For caching:
-      // https://vercel.com/docs/concepts/functions/edge-caching
       const maxAgeInSeconds = 24 * 60 * 60;
       res.setHeader('Cache-Control', `s-maxage=${maxAgeInSeconds}`);
 

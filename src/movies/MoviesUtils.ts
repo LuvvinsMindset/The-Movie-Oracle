@@ -13,7 +13,6 @@ export function getMovieReleaseYear(movie: Movie) {
   return year;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isMovie(value: any): value is Movie {
   return (
     value.media_type === MediaType.MOVIE ||

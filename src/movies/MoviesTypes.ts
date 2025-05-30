@@ -51,3 +51,23 @@ export type MovieDetails = Movie & {
   videos: PaginationResponse<MovieVideo>;
   credits: { cast: MovieCast[]; crew: MovieCrew[] };
 };
+
+export interface WatchProviderSource {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string;
+}
+
+export interface WatchProviderCountry {
+  link: string;
+  rent?: WatchProviderSource[];
+  buy?: WatchProviderSource[];
+  flatrate?: WatchProviderSource[];
+}
+
+export interface WatchProvidersResponse {
+  id: number;
+  results: {
+    [countryCode: string]: WatchProviderCountry;
+  };
+}

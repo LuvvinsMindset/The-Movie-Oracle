@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Container, Box, TextField, Button, Typography, Alert } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useUser } from '@/context/UserContext';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Register = () => {
   const [email, setEmail] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const router = useRouter();
   const { login } = useUser();
 
@@ -17,14 +21,39 @@ const Register = () => {
       setError('Invalid email format');
       return;
     }
+    if (!username || username.length < 3) {
+      setError('Username must be at least 3 characters long');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    const captchaToken = recaptchaRef.current?.getValue();
+    if (!captchaToken) {
+      setError('Please verify that you are not a robot');
+      return;
+    }
+
     setError('');
     try {
-      const response = await axios.post('/api/auth/register', { email, password });
-      login(response.data.email);
+      const response = await axios.post('/api/auth/register', { 
+        email, 
+        username,
+        password,
+        captchaToken 
+      });
+      login(response.data.email, response.data.username);
       router.push('/');
     } catch (error) {
       console.error('Error registering:', error);
       setError('Registration failed');
+      recaptchaRef.current?.reset();
     }
   };
 
@@ -63,15 +92,44 @@ const Register = () => {
             margin="normal"
             required
             fullWidth
+            id="username"
+            label="Username"
+            name="username"
+            autoComplete="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             name="password"
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            id="confirmPassword"
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
           {error && <Alert severity="error">{error}</Alert>}
+          <Box sx={{ mt: 2, mb: 2, display: 'flex', justifyContent: 'center' }}>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}
+            />
+          </Box>
           <Button
             type="submit"
             fullWidth

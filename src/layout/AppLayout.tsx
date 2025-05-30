@@ -9,7 +9,6 @@ import AppDrawer, { APP_DRAWER_WIDTH } from '@/layout/AppDrawer';
 const Main = styled(Container)(({ theme }) => ({
   padding: theme.spacing(2),
   flex: 1,
-  // To not let content of "main" to exceed it horizontally.
   minWidth: 0,
   minHeight: '100%',
 })) as typeof Container;
