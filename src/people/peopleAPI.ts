@@ -10,7 +10,7 @@ export const peopleAPI = {
     queryFn: async () =>
       IS_SERVER
         ? peopleService.getPersonDetails(personId)
-        : httpClient.get<PersonDetails>(`/api/person/${personId}`),
+        : httpClient.get<PersonDetails>(`/api/people/${personId}`),
   }),
   popularPeople: () => ({
     queryKey: ['popularPeople'],

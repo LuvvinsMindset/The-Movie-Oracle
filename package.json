@@ -47,6 +47,7 @@
     "react-infinite-scroll-hook": "^4.1.1",
     "react-query": "^4.0.0",
     "react-toastify": "^10.0.5",
+    "recharts": "^2.15.3",
     "swiper": "^9.2.4"
   },
   "devDependencies": {

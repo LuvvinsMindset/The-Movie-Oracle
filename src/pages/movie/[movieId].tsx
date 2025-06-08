@@ -13,6 +13,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { WatchProvidersResponse, WatchProviderSource } from '@/movies/MoviesTypes';
+import { useTranslation } from '@/translations/useTranslation';
 
 const COUNTRY_NAMES: { [key: string]: string } = {
   AE: 'United Arab Emirates',
@@ -74,6 +75,7 @@ function getMovieId(query: ParsedUrlQuery) {
 
 function MovieProfilePage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const movieId = getMovieId(router.query);
   const { data, isLoading } = useQuery(moviesAPI.movieDetails(movieId));
   const watchProvidersQuery = useQuery(moviesAPI.movieWatchProviders(movieId)) as UseQueryResult<WatchProvidersResponse>;
@@ -195,21 +197,21 @@ function MovieProfilePage() {
                 fullWidth
                 startIcon={favorite ? <DeleteIcon /> : undefined}
               >
-                {favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                {favorite ? t('removeFromFavorites') : t('addToFavorites')}
               </Button>
 
               {watchProviders?.results && Object.keys(watchProviders.results).length > 0 && (
                 <Box mt={3}>
                   <Typography variant="h6" gutterBottom>
-                    Where to Watch
+                    {t('whereToWatch')}
                   </Typography>
                   
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
-                    <InputLabel id="country-select-label">Region</InputLabel>
+                    <InputLabel id="country-select-label">{t('region')}</InputLabel>
                     <Select
                       labelId="country-select-label"
                       value={selectedCountry}
-                      label="Region"
+                      label={t('region')}
                       onChange={handleCountryChange}
                     >
                       {availableCountries.map((code) => (
@@ -222,13 +224,13 @@ function MovieProfilePage() {
 
                   {countryProviders ? (
                     <>
-                      {renderProviderSection("Stream", countryProviders.flatrate)}
-                      {renderProviderSection("Rent", countryProviders.rent)}
-                      {renderProviderSection("Buy", countryProviders.buy)}
+                      {renderProviderSection(String(t('stream')), countryProviders.flatrate)}
+                      {renderProviderSection(String(t('rent')), countryProviders.rent)}
+                      {renderProviderSection(String(t('buy')), countryProviders.buy)}
                     </>
                   ) : (
                     <Typography variant="body2" color="text.secondary">
-                      No streaming information available for this region
+                      {t('noStreamingInfo')}
                     </Typography>
                   )}
                 </Box>

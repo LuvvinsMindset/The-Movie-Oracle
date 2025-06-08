@@ -6,6 +6,8 @@ import MovieRating from '@/movies/MovieRating';
 import { getMovieReleaseYear } from '@/movies/MoviesUtils';
 import TextWithLabel from '@/common/TextWithLabel';
 import NextLink from '@/routing/NextLink';
+import { useTranslation } from '@/translations/useTranslation';
+import MovieFinancialChart from './MovieFinancialChart';
 
 const Overview = styled(Typography)({
   whiteSpace: 'pre-wrap',
@@ -18,6 +20,7 @@ interface MovieIntroductionProps {
 function MovieIntroduction({ movie }: MovieIntroductionProps) {
   const releaseYear = getMovieReleaseYear(movie);
   const crew = movie.credits.crew.filter((crew) => crew.job === 'Director');
+  const { t } = useTranslation();
 
   return (
     <Introduction
@@ -39,7 +42,7 @@ function MovieIntroduction({ movie }: MovieIntroductionProps) {
           >
             {releaseYear && <span>{getMovieReleaseYear(movie)}</span>}
             <span>&middot;</span>
-            <span>{movie.runtime} minutes</span>
+            <span>{movie.runtime} {t('minutes')}</span>
           </Stack>
         </Box>
       }
@@ -47,7 +50,7 @@ function MovieIntroduction({ movie }: MovieIntroductionProps) {
         <Stack spacing={0.5} sx={{ marginTop: 1 }}>
           <MovieRating movie={movie} size="medium" />
           <div>
-            <Typography variant="h6">Overview</Typography>
+            <Typography variant="h6">{t('overview')}</Typography>
             {movie.tagline && (
               <Typography gutterBottom>{movie.tagline}</Typography>
             )}
@@ -94,9 +97,14 @@ function MovieIntroduction({ movie }: MovieIntroductionProps) {
               </List>
             </div>
           )}
-          <div>
+          {movie.budget > 0 && movie.revenue > 0 && (
+            <div>
+              <MovieFinancialChart budget={movie.budget} revenue={movie.revenue} />
+            </div>
+          )}
+          <div style={{ marginTop: '2rem' }}>
             <Typography variant="h6" gutterBottom>
-              Genres
+              {t('genres')}
             </Typography>
             <List
               disablePadding

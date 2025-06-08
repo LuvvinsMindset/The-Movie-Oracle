@@ -9,6 +9,29 @@ import { moviesAPI } from '@/movies/moviesAPI';
 import { apiConfigurationAPI } from '@/api-configuration/apiConfigurationAPI';
 import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps } from 'next';
+import { useTranslation } from '@/translations/useTranslation';
+
+const genreTranslationMap: { [key: number]: string } = {
+  28: 'action',
+  12: 'adventure',
+  16: 'animation',
+  35: 'comedy',
+  80: 'crime',
+  99: 'documentary',
+  18: 'drama',
+  10751: 'family',
+  14: 'fantasy',
+  36: 'history',
+  27: 'horror',
+  10402: 'music',
+  9648: 'mystery',
+  10749: 'romance',
+  878: 'scienceFiction',
+  10770: 'tvMovie',
+  53: 'thriller',
+  10752: 'war',
+  37: 'western'
+};
 
 function getFilterValues(query: ParsedUrlQuery) {
   const sorting = getSelectedSorting(query.sortBy);
@@ -18,14 +41,17 @@ function getFilterValues(query: ParsedUrlQuery) {
 
 function DiscoverMoviesPage() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const { data: genres } = useQuery(moviesAPI.genres());
   const { genreId, sorting } = getFilterValues(router.query);
   const genre = genres?.find((genre) => genre.id === genreId);
+  const genreTranslationKey = genre ? genreTranslationMap[genre.id] : undefined;
+  const genreName = genreTranslationKey ? t(genreTranslationKey) : genre?.name;
 
   return (
     <MoviesListTemplate
-      title={genre ? `${genre.name} Movies` : 'Discover Movies'}
+      title={genreName ? `${genreName} ${t('movies')}` : t('discoverMovies')}
       titleExtra={
         <MovieSortingSelect
           value={sorting.id}
@@ -36,7 +62,7 @@ function DiscoverMoviesPage() {
           }
         />
       }
-      description={genre ? `${genre.name} movies list` : 'Discover movies list'}
+      description={genreName ? `${genreName} ${t('movies')}` : t('discoverMovies')}
       apiQuery={moviesAPI.discoverMovies({
         genreId,
         sortBy: sorting.id,

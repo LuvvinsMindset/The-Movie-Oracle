@@ -47,9 +47,12 @@ type MovieCrew = BasePerson & {
 };
 
 export type MovieDetails = Movie & {
-  images: { backdrops: MovieImage[] };
-  videos: PaginationResponse<MovieVideo>;
+  images: { backdrops: MovieImage[]; posters: MovieImage[] };
+  videos: { results: MovieVideo[] };
   credits: { cast: MovieCast[]; crew: MovieCrew[] };
+  recommendations: PaginationResponse<Movie>;
+  budget: number;
+  revenue: number;
 };
 
 export interface WatchProviderSource {

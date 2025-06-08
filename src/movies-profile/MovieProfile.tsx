@@ -9,6 +9,7 @@ import LoadingIndicator from '@/common/LoadingIndicator';
 import { MovieDetails } from '@/movies/MoviesTypes';
 import useApiConfiguration from '@/api-configuration/ApiConfigurationHooks';
 import FullSizeBackgroundImage from '@/common/FullSizeBackgroundImage';
+import { useTranslation } from '@/translations/useTranslation';
 
 interface MovieProfileProps {
   movie: Maybe<MovieDetails>;
@@ -17,6 +18,7 @@ interface MovieProfileProps {
 
 function MovieProfile({ movie, loading }: MovieProfileProps) {
   const { getImageUrl } = useApiConfiguration();
+  const { t } = useTranslation();
 
   return (
     <LoadingIndicator loading={loading}>
@@ -31,28 +33,28 @@ function MovieProfile({ movie, loading }: MovieProfileProps) {
 
             <div>
               <Typography variant="h6" gutterBottom>
-                Videos
+                {t('videos')}
               </Typography>
               <MovieVideoCarousel movieId={movie.id} />
             </div>
 
             <div>
               <Typography variant="h6" gutterBottom>
-                Images
+                {t('images')}
               </Typography>
               <MovieImageCarousel movie={movie} />
             </div>
 
             <div>
               <Typography variant="h6" gutterBottom>
-                Cast
+                {t('movieCast')}
               </Typography>
               <MovieCastCarousel movieId={movie.id} />
             </div>
 
             <div>
               <Typography variant="h6" gutterBottom>
-                Recommendations
+                {t('recommendations')}
               </Typography>
               <MovieRecommendations movieId={movie.id} />
             </div>

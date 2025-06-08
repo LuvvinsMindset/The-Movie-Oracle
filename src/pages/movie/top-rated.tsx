@@ -4,12 +4,15 @@ import MoviesListTemplate from '@/page-templates/MoviesListTemplate';
 import { moviesAPI } from '@/movies/moviesAPI';
 import { apiConfigurationAPI } from '@/api-configuration/apiConfigurationAPI';
 import { GetServerSideProps } from 'next';
+import { useTranslation } from '@/translations/useTranslation';
 
 function TopRatedMoviesPage() {
+  const { t } = useTranslation();
+
   return (
     <MoviesListTemplate
-      title="Top Rated Movies"
-      description="Top rated movies list"
+      title={t('topRatedMovies')}
+      description={t('topRatedMovies')}
       apiQuery={moviesAPI.topRatedMovies()}
     />
   );

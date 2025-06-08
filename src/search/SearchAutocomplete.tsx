@@ -13,6 +13,7 @@ import { isPerson } from '@/people/PeopleUtils';
 import { searchAPI } from './searchAPI';
 import { SxProps, Theme } from '@mui/material';
 import { useDebounce, useHasChanged } from '@/common/CommonHooks';
+import { useTranslation } from '@/translations/useTranslation';
 
 interface SearchAutocompleteProps {
   autoFocus?: boolean;
@@ -34,6 +35,8 @@ function SearchAutocomplete({ autoFocus, sx }: SearchAutocompleteProps) {
     ...searchAPI.searchMulti(debouncedSearchValue),
     enabled: isSearchEnabled,
   });
+
+  const { t } = useTranslation();
 
   const handleRedirect = (inputValue: string) => {
     if (inputValue) {
@@ -70,7 +73,7 @@ function SearchAutocomplete({ autoFocus, sx }: SearchAutocompleteProps) {
   return (
     <BaseAutocomplete<Suggestion, false, true, true>
       sx={sx}
-      placeholder="Search Movies & People"
+      placeholder={t('search')}
       options={options}
       renderOption={(props, option) => {
         return isMovie(option) ? (

@@ -3,6 +3,7 @@ import { ID } from '@/common/CommonTypes';
 import { useQuery } from '@tanstack/react-query';
 import MovieCard from '@/movies/MovieCard';
 import { peopleAPI } from '@/people/peopleAPI';
+import { useTranslation } from '@/translations/useTranslation';
 import _ from 'lodash';
 
 interface PersonCrewGridListProps {
@@ -11,12 +12,13 @@ interface PersonCrewGridListProps {
 
 function PersonCrewGridList({ personId }: PersonCrewGridListProps) {
   const { data, isLoading } = useQuery(peopleAPI.personDetails(personId));
+  const { t } = useTranslation();
   const crewList = _.uniqBy(data?.credits.crew ?? [], (crew) => crew.id);
 
   return (
     <BaseGridList
       loading={isLoading}
-      listEmptyMessage="No crew info has been found."
+      listEmptyMessage={t('noCrew')}
     >
       {crewList.map((personCrew) => {
         const allJobs = data?.credits.crew

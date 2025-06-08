@@ -1,5 +1,5 @@
 import { forwardRef, useState, useEffect } from 'react';
-import { AppBar, Toolbar, Box, IconButton, Stack, Button, Badge } from '@mui/material';
+import { AppBar, Toolbar, Box, IconButton, Stack, Button, Badge, Menu, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import HideOnScroll from '@/layout/HideOnScroll';
@@ -20,6 +20,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import axios from 'axios';
 import { messageEvents } from '@/utils/messageEvents';
+import { useTranslation } from '@/translations/useTranslation';
 
 const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
   const isMobile = useIsMobile();
@@ -27,6 +28,7 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
   const { user, logout, username, role } = useUser();
   const router = useRouter();
   const [unreadCount, setUnreadCount] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (role === 'admin') {
@@ -119,19 +121,19 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
           {!isMobileSearch && (
             <Stack spacing={1} direction="row">
               <IconButton
-                aria-label="Show search"
+                aria-label={t('search')}
                 onClick={showMobileSearch}
                 sx={{ display: { md: 'none' } }}
               >
                 <SearchIcon />
               </IconButton>
-              
+
               {user && (
                 <IconButton
                   color="inherit"
                   onClick={() => router.push('/support')}
                   sx={{ ml: 1 }}
-                  aria-label="support"
+                  aria-label={t('support')}
                 >
                   <HelpOutlineIcon />
                 </IconButton>
@@ -143,7 +145,7 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
                     color="inherit"
                     onClick={() => router.push('/admin/messages')}
                     sx={{ ml: 1 }}
-                    aria-label="messages"
+                    aria-label={t('messages')}
                   >
                     <Badge badgeContent={unreadCount} color="error">
                       <EmailIcon />
@@ -153,7 +155,7 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
                     color="inherit"
                     onClick={() => router.push('/admin/activity')}
                     sx={{ ml: 1 }}
-                    aria-label="activity"
+                    aria-label={t('activity')}
                   >
                     <TimelineIcon />
                   </IconButton>
@@ -179,12 +181,12 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
                       <Button color="inherit">{username}</Button>
                     </Link>
                     <Link href="/favorites" passHref>
-                      <IconButton sx={{ color: 'white' }} aria-label="favorites">
+                      <IconButton sx={{ color: 'white' }} aria-label={t('favorites')}>
                         <FavoriteIcon />
                       </IconButton>
                     </Link>
                     <Button onClick={handleLogout} color="inherit">
-                      Logout
+                      {t('logout')}
                     </Button>
                   </Box>
                 </>
@@ -192,12 +194,12 @@ const AppHeader = forwardRef<HTMLDivElement>(function AppHeader(props, ref) {
                 <>
                   <Link href="/login" passHref>
                     <Button variant="contained" color="primary">
-                      Login
+                      {t('login')}
                     </Button>
                   </Link>
                   <Link href="/register" passHref>
                     <Button variant="contained" color="secondary">
-                      Register
+                      {t('register')}
                     </Button>
                   </Link>
                 </>

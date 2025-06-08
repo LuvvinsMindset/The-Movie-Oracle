@@ -3,6 +3,7 @@ import { Container, Box, Typography, TextField, Button, Alert } from '@mui/mater
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useUser } from '@/context/UserContext';
+import { useTranslation } from '@/translations/useTranslation';
 
 interface User {
   id: number;
@@ -24,6 +25,7 @@ const Settings = () => {
   const [role, setRole] = useState<string>('');
   const router = useRouter();
   const { login } = useUser();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const userEmail = localStorage.getItem('userEmail') || '';
@@ -49,6 +51,7 @@ const Settings = () => {
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+      setError(t('errorOccurred'));
     }
   };
 
@@ -59,34 +62,35 @@ const Settings = () => {
       setAllUsers(users);
     } catch (error) {
       console.error('Error fetching all users:', error);
+      setError(t('errorOccurred'));
     }
   };
 
   const handleChangePassword = async () => {
     if (!newPassword) {
-      setError('New password cannot be empty');
+      setError(t('newPassword'));
       return;
     }
 
     try {
       await axios.post('/api/user/change-password', { email, password, newPassword });
-      setSuccess('Password changed successfully');
+      setSuccess(t('passwordChanged'));
       setError('');
     } catch (error) {
       console.error('Error changing password:', error);
-      setError('Failed to change password');
+      setError(t('passwordError'));
     }
   };
 
   const handleUpdateRole = async () => {
     try {
       await axios.post('/api/admin/update-role', { email: roleEmail, role: newRole });
-      setSuccess('User role updated successfully');
+      setSuccess(t('roleUpdated'));
       setError('');
-      fetchAllUsers(); // Refresh the user list
+      fetchAllUsers();
     } catch (error) {
       console.error('Error updating user role:', error);
-      setError('Failed to update user role');
+      setError(t('roleError'));
     }
   };
 
@@ -96,43 +100,43 @@ const Settings = () => {
       fetchAllUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
-      setError('Failed to delete user');
+      setError(t('errorOccurred'));
     }
   };
 
   const handleChangeUsername = async () => {
     if (!newUsername || newUsername.length < 3) {
-      setError('Username must be at least 3 characters long');
+      setError(t('usernameError'));
       return;
     }
 
     try {
       await axios.post('/api/user/change-username', { email, newUsername });
-      setSuccess('Username changed successfully');
+      setSuccess(t('usernameChanged'));
       setError('');
       login(email, newUsername);
       setUsername(newUsername);
       setNewUsername('');
     } catch (error: any) {
       console.error('Error changing username:', error);
-      setError(error.response?.data?.message || 'Failed to change username');
+      setError(error.response?.data?.message || t('usernameError'));
     }
   };
 
   return (
     <Container maxWidth="md">
       <Box sx={{ marginTop: 8 }}>
-        <Typography variant="h4">Settings</Typography>
+        <Typography variant="h4">{t('settings')}</Typography>
 
         <Box sx={{ marginTop: 4 }}>
-          <Typography variant="h5">Profile</Typography>
+          <Typography variant="h5">{t('profile')}</Typography>
           <Box component="form" onSubmit={(e) => { e.preventDefault(); handleChangeUsername(); }}>
             <TextField
               margin="normal"
               required
               fullWidth
               name="currentUsername"
-              label="Current Username"
+              label={t('currentUsername')}
               type="text"
               id="currentUsername"
               value={username}
@@ -143,27 +147,27 @@ const Settings = () => {
               required
               fullWidth
               name="newUsername"
-              label="New Username"
+              label={t('newUsername')}
               type="text"
               id="newUsername"
               value={newUsername}
               onChange={(e) => setNewUsername(e.target.value)}
             />
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Change Username
+              {t('changeUsername')}
             </Button>
           </Box>
         </Box>
 
         <Box sx={{ marginTop: 4 }}>
-          <Typography variant="h5">Security</Typography>
+          <Typography variant="h5">{t('security')}</Typography>
           <Box component="form" onSubmit={(e) => { e.preventDefault(); handleChangePassword(); }}>
             <TextField
               margin="normal"
               required
               fullWidth
               name="password"
-              label="Current Password"
+              label={t('currentPassword')}
               type="password"
               id="password"
               autoComplete="current-password"
@@ -175,7 +179,7 @@ const Settings = () => {
               required
               fullWidth
               name="newPassword"
-              label="New Password"
+              label={t('newPassword')}
               type="password"
               id="newPassword"
               autoComplete="new-password"
@@ -185,21 +189,21 @@ const Settings = () => {
             {error && <Alert severity="error">{error}</Alert>}
             {success && <Alert severity="success">{success}</Alert>}
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Change Password
+              {t('changePassword')}
             </Button>
           </Box>
         </Box>
 
         {role === 'admin' && (
           <Box sx={{ marginTop: 4 }}>
-            <Typography variant="h5">Admin Controls</Typography>
+            <Typography variant="h5">{t('adminControls')}</Typography>
             <Box component="form" onSubmit={(e) => { e.preventDefault(); handleUpdateRole(); }}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 name="roleEmail"
-                label="User Email"
+                label={t('userEmail')}
                 type="email"
                 id="roleEmail"
                 value={roleEmail}
@@ -210,14 +214,14 @@ const Settings = () => {
                 required
                 fullWidth
                 name="newRole"
-                label="New Role (user/admin)"
+                label={t('newRole')}
                 type="text"
                 id="newRole"
                 value={newRole}
                 onChange={(e) => setNewRole(e.target.value)}
               />
               <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                Update Role
+                {t('updateRole')}
               </Button>
             </Box>
 
@@ -235,12 +239,12 @@ const Settings = () => {
                     }}
                     onClick={() => handleDeleteUser(user.email)}
                   >
-                    Delete
+                    {t('deleteUser')}
                   </Button>
                 </Box>
               ))
             ) : (
-              <Typography>No users found</Typography>
+              <Typography>{t('noUsers')}</Typography>
             )}
           </Box>
         )}

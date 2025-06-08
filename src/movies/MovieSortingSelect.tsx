@@ -1,27 +1,24 @@
 import { Box, MenuItem, TextField } from '@mui/material';
 import { Maybe } from '@/common/CommonTypes';
+import { useTranslation } from '@/translations/useTranslation';
 
 const MOVIE_SORTING = {
   popularity: {
     id: 'popularity.desc',
-    title: 'Most Popular',
+    titleKey: 'popularity'
   },
-  voteCount: {
-    id: 'vote_count.desc',
-    title: 'Most Voted',
-  },
-  voteAverage: {
+  rating: {
     id: 'vote_average.desc',
-    title: 'Top Rated',
-  },
-  newToOld: {
-    id: 'release_date.desc',
-    title: 'New to Old',
+    titleKey: 'rating'
   },
   releaseDate: {
-    id: 'release_date.asc',
-    title: 'Old to New',
+    id: 'release_date.desc',
+    titleKey: 'releaseDate'
   },
+  title: {
+    id: 'release_date.asc',
+    titleKey: 'oldestMovies'
+  }
 };
 
 const sortings = Object.values(MOVIE_SORTING);
@@ -45,10 +42,12 @@ interface MovieSortingSelectProps {
 }
 
 function MovieSortingSelect({ value, onChange }: MovieSortingSelectProps) {
+  const { t } = useTranslation();
+
   return (
     <Box sx={{ minWidth: 220 }}>
       <TextField
-        label="Sort by"
+        label={t('sortBy')}
         select
         fullWidth
         size="small"
@@ -58,7 +57,7 @@ function MovieSortingSelect({ value, onChange }: MovieSortingSelectProps) {
         {sortings.map((option) => {
           return (
             <MenuItem key={option.id} value={option.id}>
-              {option.title}
+              {t(option.titleKey)}
             </MenuItem>
           );
         })}

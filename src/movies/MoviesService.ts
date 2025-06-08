@@ -39,6 +39,9 @@ const getDiscoverMovies = async (
   page: number,
   params: { genreId?: ID; sortBy?: string },
 ): Promise<PaginationResponse<Movie>> => {
+  const isReleaseDateSort = params.sortBy?.includes('release_date');
+  const voteCountThreshold = isReleaseDateSort ? 5 : VIEW_FILTER_LIMIT.minVoteCount;
+
   const movies = await tmdbClient.get<PaginationResponse<Movie>>(
     '/discover/movie',
     {
@@ -46,7 +49,7 @@ const getDiscoverMovies = async (
         with_genres: params.genreId,
         sort_by: params.sortBy,
         page,
-        'vote_count.gte': VIEW_FILTER_LIMIT.minVoteCount,
+        'vote_count.gte': voteCountThreshold,
       },
     },
   );

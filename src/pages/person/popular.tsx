@@ -10,16 +10,18 @@ import { apiConfigurationAPI } from '@/api-configuration/apiConfigurationAPI';
 import { peopleAPI } from '@/people/peopleAPI';
 import InfiniteGridList from '@/common/InfiniteGridList';
 import { GetServerSideProps } from 'next';
+import { useTranslation } from '@/translations/useTranslation';
 
 function PopularPeoplePage() {
   const { data, hasNextPage, isFetching, fetchNextPage } = useInfiniteQuery<
     PaginationResponse<Person>
   >(peopleAPI.popularPeople());
+  const { t } = useTranslation();
 
   return (
     <>
-      <BaseSeo title="Popular People" description="Popular people list" />
-      <PageTitle title="Popular People" />
+      <BaseSeo title={t('popularPeople')} description={t('popularPeople')} />
+      <PageTitle title={t('popularPeople')} />
       <InfiniteGridList
         loading={isFetching}
         hasNextPage={!!hasNextPage}

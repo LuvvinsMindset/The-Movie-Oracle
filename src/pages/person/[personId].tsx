@@ -10,8 +10,9 @@ import { ParsedUrlQuery } from 'querystring';
 import { GetServerSideProps } from 'next';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTranslation } from '@/translations/useTranslation';
 
 function getPersonId(query: ParsedUrlQuery) {
   return Number(query.personId);
@@ -20,11 +21,12 @@ function getPersonId(query: ParsedUrlQuery) {
 function PersonProfilePage() {
   const router = useRouter();
   const personId = getPersonId(router.query);
-  const { data: person, isLoading } = useQuery(
+  const { data: person, isLoading, error } = useQuery(
     peopleAPI.personDetails(personId),
   );
   const [favorite, setFavorite] = useState(false);
   const { getImageUrl } = useApiConfiguration();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
@@ -75,6 +77,23 @@ function PersonProfilePage() {
     }
   };
 
+  if (error) {
+    console.error('Error loading person details:', error);
+    return (
+      <Typography color="error" align="center">
+        {t('errorOccurred')}
+      </Typography>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Typography align="center">
+        Loading...
+      </Typography>
+    );
+  }
+
   return (
     <>
       {person && (
@@ -94,7 +113,7 @@ function PersonProfilePage() {
         />
           <Grid container spacing={2}>
             <Grid item xs={12} md={8}>
-      <PersonProfile person={person} loading={isLoading} />
+              <PersonProfile person={person} loading={isLoading} />
             </Grid>
             <Grid item xs={12} md={4}>
               <Button 
@@ -104,7 +123,7 @@ function PersonProfilePage() {
                 fullWidth
                 startIcon={favorite ? <DeleteIcon /> : undefined}
               >
-                {favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                {favorite ? t('removeFromFavorites') : t('addToFavorites')}
               </Button>
             </Grid>
           </Grid>
@@ -118,16 +137,25 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const personId = getPersonId(ctx.params ?? {});
   const queryClient = createQueryClient();
 
-  await Promise.all([
-    queryClient.fetchQuery(apiConfigurationAPI.configuration()),
-    queryClient.fetchQuery(peopleAPI.personDetails(personId)),
-  ]);
+  try {
+    await Promise.all([
+      queryClient.fetchQuery(apiConfigurationAPI.configuration()),
+      queryClient.fetchQuery(peopleAPI.personDetails(personId)),
+    ]);
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  } catch (error) {
+    console.error('Error in getServerSideProps:', error);
+    return {
+      props: {
+        dehydratedState: dehydrate(queryClient),
+      },
+    };
+  }
 };
 
 export default PersonProfilePage;

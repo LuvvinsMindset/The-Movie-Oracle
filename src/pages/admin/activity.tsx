@@ -29,7 +29,7 @@ const ActivityPage = () => {
     }
     if (user) {
       fetchActivities();
-      const interval = setInterval(fetchActivities, 30000); // Refresh every 30 seconds
+      const interval = setInterval(fetchActivities, 30000);
       return () => clearInterval(interval);
     }
   }, [role, user]);

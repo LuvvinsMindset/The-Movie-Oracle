@@ -8,6 +8,7 @@ import { Person } from '@/people/PeopleTypes';
 import PersonCrewGridList from './PersonCrewGridList';
 import FullSizeBackgroundImage from '@/common/FullSizeBackgroundImage';
 import useApiConfiguration from '@/api-configuration/ApiConfigurationHooks';
+import { useTranslation } from '@/translations/useTranslation';
 
 interface PersonProfileProps {
   person: Maybe<Person>;
@@ -16,6 +17,7 @@ interface PersonProfileProps {
 
 function PersonProfile({ person, loading }: PersonProfileProps) {
   const { getImageUrl } = useApiConfiguration();
+  const { t } = useTranslation();
 
   return (
     <LoadingIndicator loading={loading}>
@@ -29,19 +31,19 @@ function PersonProfile({ person, loading }: PersonProfileProps) {
             <PersonIntroduction person={person} />
             <div>
               <Typography variant="h6" gutterBottom>
-                Images
+                {t('images')}
               </Typography>
               <PersonImageCarousel person={person} />
             </div>
             <div>
               <Typography variant="h6" gutterBottom>
-                Castings
+                {t('personCast')}
               </Typography>
               <PersonCastingGridList personId={person.id} />
             </div>
             <div>
               <Typography variant="h6" gutterBottom>
-                Crew
+                {t('crew')}
               </Typography>
               <PersonCrewGridList personId={person.id} />
             </div>

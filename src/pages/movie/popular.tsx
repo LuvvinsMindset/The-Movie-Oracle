@@ -4,12 +4,15 @@ import MoviesListTemplate from '@/page-templates/MoviesListTemplate';
 import { moviesAPI } from '@/movies/moviesAPI';
 import { apiConfigurationAPI } from '@/api-configuration/apiConfigurationAPI';
 import { GetServerSideProps } from 'next';
+import { useTranslation } from '@/translations/useTranslation';
 
 function PopularMoviesPage() {
+  const { t } = useTranslation();
+
   return (
     <MoviesListTemplate
-      title="Popular Movies"
-      description="Popular movies list"
+      title={t('popularMovies')}
+      description={t('popularMovies')}
       apiQuery={moviesAPI.popularMovies()}
     />
   );

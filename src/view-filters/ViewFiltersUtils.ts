@@ -7,13 +7,20 @@ import { isPerson } from '@/people/PeopleUtils';
 export const VIEW_FILTER_LIMIT = {
   minVoteCount: 50,
   minPopularity: 5,
+  oldMoviesMinVoteCount: 5,
+  oldMoviesMinPopularity: 1
 };
 
 export function shouldViewMovie<T extends Movie>(movie: T) {
+  const isOldMovie = movie.release_date && new Date(movie.release_date).getFullYear() < 2000;
+  
+  const minVoteCount = isOldMovie ? VIEW_FILTER_LIMIT.oldMoviesMinVoteCount : VIEW_FILTER_LIMIT.minVoteCount;
+  const minPopularity = isOldMovie ? VIEW_FILTER_LIMIT.oldMoviesMinPopularity : VIEW_FILTER_LIMIT.minPopularity;
+
   return (
     !movie.adult &&
-    movie.vote_count >= VIEW_FILTER_LIMIT.minVoteCount &&
-    movie.popularity >= VIEW_FILTER_LIMIT.minPopularity
+    movie.vote_count >= minVoteCount &&
+    movie.popularity >= minPopularity
   );
 }
 

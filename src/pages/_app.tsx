@@ -1,57 +1,42 @@
-import { useState } from 'react';
-import Head from 'next/head';
-import App, { AppContext, AppProps } from 'next/app';
-import AppLayout from '@/layout/AppLayout';
-import BaseDefaultSeo from '@/seo/BaseDefaultSeo';
-import { APP_TITLE } from '@/common/CommonConstants';
+import { AppProps } from 'next/app';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { CacheProvider, EmotionCache } from '@emotion/react';
 import BaseThemeProvider, { getInitialPaletteMode } from '@/theme/BaseThemeProvider';
-import PageProgressBar from '@/common/PageProgressBar';
 import createEmotionCache from '@/theme/createEmotionCache';
-import { EmotionCache } from '@emotion/cache';
-import { CacheProvider } from '@emotion/react';
-import { DehydratedState, Hydrate, QueryClientProvider } from '@tanstack/react-query';
-import { createQueryClient } from '@/http-client/queryClient';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { PaletteMode } from '@mui/material';
+import AppLayout from '@/layout/AppLayout';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { UserProvider } from '@/context/UserContext';
+import { LanguageProvider } from '@/context/LanguageContext';
+import { PaletteMode } from '@mui/material';
+import App, { AppContext } from 'next/app';
 
 const clientSideEmotionCache = createEmotionCache();
 
-type PageProps = { dehydratedState: DehydratedState };
-
-type MyAppProps = AppProps<PageProps> & {
+interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
   initialPaletteMode: PaletteMode;
-};
+}
 
-function MyApp({
-  Component,
-  pageProps,
-  emotionCache = clientSideEmotionCache,
-  initialPaletteMode,
-}: MyAppProps) {
-  const [queryClient] = useState(() => createQueryClient());
+const queryClient = new QueryClient();
+
+function MyApp(props: MyAppProps) {
+  const { Component, emotionCache = clientSideEmotionCache, pageProps, initialPaletteMode } = props;
 
   return (
     <CacheProvider value={emotionCache}>
-      <QueryClientProvider client={queryClient}>
-        <Hydrate state={pageProps.dehydratedState}>
-          <Head>
-            <title>{APP_TITLE}</title>
-            <meta name="viewport" content="initial-scale=1, width=device-width" />
-          </Head>
-          <BaseDefaultSeo />
-          <BaseThemeProvider initialPaletteMode={initialPaletteMode}>
-            <UserProvider>
-              <PageProgressBar />
+      <BaseThemeProvider initialPaletteMode={initialPaletteMode}>
+        <CssBaseline />
+        <QueryClientProvider client={queryClient}>
+          <UserProvider>
+            <LanguageProvider>
               <AppLayout>
                 <Component {...pageProps} />
               </AppLayout>
-            </UserProvider>
-          </BaseThemeProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </Hydrate>
-      </QueryClientProvider>
+            </LanguageProvider>
+          </UserProvider>
+        </QueryClientProvider>
+      </BaseThemeProvider>
     </CacheProvider>
   );
 }

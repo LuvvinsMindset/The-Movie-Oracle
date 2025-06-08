@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import BaseCarousel from '@/common/BaseCarousel';
 import ImageCarouselItem from '@/common/ImageCarouselItem';
 import { peopleAPI } from '@/people/peopleAPI';
+import { useTranslation } from '@/translations/useTranslation';
 
 interface PersonImageCarouselProps {
   person: Person;
@@ -11,6 +12,7 @@ interface PersonImageCarouselProps {
 
 function PersonImageCarousel({ person }: PersonImageCarouselProps) {
   const { data, isLoading } = useQuery(peopleAPI.personDetails(person.id));
+  const { t } = useTranslation();
   const filePaths =
     data?.images.profiles.map((profile) => profile.file_path) || [];
 
@@ -20,14 +22,14 @@ function PersonImageCarousel({ person }: PersonImageCarouselProps) {
         key={person.id}
         loading={isLoading}
         slidesPerView={{ default: 2, md: 5, lg: 7 }}
-        listEmptyMessage="No image has been found."
+        listEmptyMessage={t('noImages')}
       >
         {filePaths.map((filePath, i) => {
           return (
             <ImageCarouselItem
               key={filePath}
               filePath={filePath}
-              imageAlt={`Person Carousel Image ${i + 1}`}
+              imageAlt={`${person.name} ${t('images')} ${i + 1}`}
               width={2}
               height={3}
             />

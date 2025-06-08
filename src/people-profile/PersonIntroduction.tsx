@@ -2,12 +2,15 @@ import { Typography, Stack } from '@mui/material';
 import Introduction from '@/introduction/Introduction';
 import { Person } from '@/people/PeopleTypes';
 import PersonInfo from './PersonInfo';
+import { useTranslation } from '@/translations/useTranslation';
 
 interface PersonIntroductionProps {
   person: Person;
 }
 
 function PersonIntroduction({ person }: PersonIntroductionProps) {
+  const { t } = useTranslation();
+
   return (
     <Introduction
       imageSrc={person.profile_path}
@@ -18,7 +21,7 @@ function PersonIntroduction({ person }: PersonIntroductionProps) {
           {person.biography && (
             <div>
               <Typography variant="h6" gutterBottom>
-                Biography
+                {t('biography')}
               </Typography>
               <Typography
                 sx={{
@@ -31,7 +34,7 @@ function PersonIntroduction({ person }: PersonIntroductionProps) {
           )}
           <div>
             <Typography variant="h6" gutterBottom>
-              Personal Info
+              {t('personalInfo')}
             </Typography>
             <PersonInfo person={person} />
           </div>
